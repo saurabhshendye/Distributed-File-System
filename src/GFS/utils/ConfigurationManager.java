@@ -21,15 +21,18 @@ public class ConfigurationManager {
     private String serverIP;
     // Server Port from config file
     private int serverPort;
+    // Local Port
+    private int localPort;
+
     // Names of the configuration files
     private static final String CLIENT_CONFIG = "client_config.json";
     private static final String CONTROLLER_CONFIG = "controller_config.json";
     private static final String CHUNKSERVER_CONFIG = "chunkServer_config.json";
 
     // Path for the config.json file
-    private static final String CLIENT_CONFIG_PATH = "src/GFS/resources/" + CLIENT_CONFIG;
-    private static final String CONTROLLER_CONFIG_PATH = "../../../" + CONTROLLER_CONFIG;
-    private static final String CHUNK_CONFIG_PATH = "../../../" + CHUNKSERVER_CONFIG;
+    private static final String CLIENT_CONFIG_PATH = "./" + CLIENT_CONFIG;
+    private static final String CONTROLLER_CONFIG_PATH = "./" + CONTROLLER_CONFIG;
+    private static final String CHUNK_CONFIG_PATH = "./" + CHUNKSERVER_CONFIG;
 
     // Regex pattern to check if the IP is valid or not
     private static final Pattern PATTERN = Pattern.compile(
@@ -122,5 +125,27 @@ public class ConfigurationManager {
         return PATTERN.matcher(ip).matches();
     }
 
+    /**
+     * Getter Method
+     * @return Respective Remote Server Port
+     */
+    public int getServerPort(){
+        return serverPort;
+    }
 
+    /**
+     * Getter Method
+     * @return local port
+     */
+    public int getLocalPort(){
+        return localPort;
+    }
+
+    /**
+     * Getter Method
+     * @return respective server IP
+     */
+    public String getServerIP() {
+        return serverIP;
+    }
 }
