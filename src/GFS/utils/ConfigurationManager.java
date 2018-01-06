@@ -23,6 +23,8 @@ public class ConfigurationManager {
     private int serverPort;
     // Local Port
     private int localPort;
+    // Directory location for chunk server
+    private String Directory;
 
     // Names of the configuration files
     private static final String CLIENT_CONFIG = "client_config.json";
@@ -50,53 +52,106 @@ public class ConfigurationManager {
         switch (serverType){
             // For Client
             case 0:
-                return checkValidity(CLIENT_CONFIG_PATH);
+                return checkValidityClient(CLIENT_CONFIG_PATH);
             // For Chunk Server
             case 1:
-                return checkValidity(CHUNK_CONFIG_PATH);
+                return checkValidityChunk(CHUNK_CONFIG_PATH);
             // For controller
             case 2:
-                return checkValidity(CONTROLLER_CONFIG_PATH);
+                return checkValidityController(CONTROLLER_CONFIG_PATH);
             default:
                 System.out.println("Invalid Type");
                 return false;
         }
     }
 
-
     /**
-     * Checks the validity of the configuration file
+     * Checks the validity of the Client configuration file
      * @param path path for the config file
      * @return true if the configuration is valid false otherwise
      */
-    private boolean checkValidity(String path){
+
+    private boolean checkValidityClient(String path){
         try {
             JSONObject jsonObject = readConfig(path);
-            serverIP = jsonObject.getString("Chunk_Server_IP");
-            serverPort = jsonObject.getInt("Chunk_Server_Port");
-
+            serverIP = jsonObject.getString("controller_ip");
+            serverPort = jsonObject.getInt("controller_port");
             // Check if IP is valid
-            if (serverIP.isEmpty()){
-                System.out.println("Invalid IP address");
-                return false;
-            }
+            return isIPValid(serverIP) && isPortValid(serverPort);
 
-            if (!validate(serverIP)){
-                System.out.println("Invalid IP address");
-                return false;
-            }
-
-            if (serverPort <= 1024 || serverPort > 65536){
-                System.out.println("Invalid Port number. Port number should be greater than 1024 and less than 65536");
-                return false;
-            }
-
-
-            return true;
         } catch (JSONException e) {
             e.printStackTrace();
             return false;
         }
+    }
+
+    /**
+     * Checks the validity of the Chunk Server configuration file
+     * @param path path for the config file
+     * @return true if the configuration is valid false otherwise
+     */
+    private boolean checkValidityChunk(String path){
+        try {
+            JSONObject jsonObject = readConfig(path);
+            serverIP = jsonObject.getString("controller_ip");
+            serverPort = jsonObject.getInt("controller_port");
+            localPort = jsonObject.getInt("Local_Port");
+            Directory = jsonObject.getString("Directory");
+            // Check if IP is valid
+            return isIPValid(serverIP) && isPortValid(serverPort) && isPortValid(localPort);
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    /**
+     * Checks the validity of the Controller configuration file
+     * @param path path for the config file
+     * @return true if the configuration is valid false otherwise
+     */
+    private boolean checkValidityController(String path){
+        try {
+            JSONObject jsonObject = readConfig(path);
+            localPort = jsonObject.getInt("Local_Port");
+            // Check if IP is valid
+            return isPortValid(localPort);
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    /**
+     * Checks if the port number is valid
+     * @param port port number
+     * @return
+     */
+    private boolean isPortValid(int port){
+        if (serverPort <= 1024 || serverPort > 65536){
+            System.out.println("Invalid Port number. Port number should be greater than 1024 and less than 65536");
+            return false;
+        }
+
+        return true;
+    }
+
+    private boolean isIPValid(String ip){
+        if (ip.isEmpty()){
+            System.out.println("Invalid IP address");
+            return false;
+        }
+
+        if (!validate(ip)){
+            System.out.println("Invalid IP address");
+            return false;
+        }
+
+
+
+        return true;
     }
 
     /**

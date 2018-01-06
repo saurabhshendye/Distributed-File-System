@@ -21,11 +21,11 @@ public class findFile {
                 } else if (name.equalsIgnoreCase(fil.getName())) {
                     P = fil;
                     path = fil.getAbsoluteFile();
-                    System.out.println("Found..");
+//                    System.out.println("Found..");
                     System.out.println(P.getName());
                     System.out.println(P.getAbsoluteFile());
                     if (P.canRead()) {
-                        System.out.println("Can read");
+//                        System.out.println("Can read");
                     }
                     this.flag = true;
                 }
