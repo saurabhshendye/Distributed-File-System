@@ -1,21 +1,26 @@
 package GFS.Threads;
 
+import GFS.Nodes.ChunkServer;
 import GFS.Nodes.Client;
+import GFS.Nodes.Controller;
 
 import java.io.IOException;
 import java.util.Scanner;
 
 public class UserInputThread extends Thread {
 
-    private Client client;
+    private Object O;
+    private static final Class clientClass = Client.class;
+    private static final Class chunkClass = ChunkServer.class;
+    private static final Class controllerClass = Controller.class;
 
     /**
      *
-     * @param client to maintain the reference to the Client class
+     * @param obj to maintain the reference to the class which created this thread
      *               This will help to invoke client class methods
      */
-    public UserInputThread(Client client){
-        this.client = client;
+    public UserInputThread(Object obj){
+        this.O = obj;
     }
 
     @Override
@@ -26,7 +31,7 @@ public class UserInputThread extends Thread {
             String command = in.nextLine();
             System.out.println("Input from User: " + command);
             try {
-                input_parser(command, client);
+                input_parser(command, O);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -34,10 +39,15 @@ public class UserInputThread extends Thread {
     }
 
 
-    private static void input_parser(String command, Client client) throws IOException {
+    private static void input_parser(String command, Object obj) throws IOException {
         // Command Move to fs
         if (command.startsWith("mvfs ")) {
-            client.moveToFS(command);
+            if (obj.getClass().equals(clientClass)){
+                Client client = (Client) obj;
+                client.moveToFS(command);
+            } else {
+                System.out.println("Invalid command for this Class");
+            }
         }
         // Delete command
         else if (command.startsWith("del ")){

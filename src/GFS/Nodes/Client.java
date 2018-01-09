@@ -3,6 +3,8 @@ package GFS.Nodes;
 import GFS.Threads.UserInputThread;
 import GFS.Transport.TCPReceiver;
 import GFS.Transport.TCPSender;
+import GFS.WireFormats.ChunkServerRequest;
+import GFS.utils.ChunkCreator;
 import GFS.utils.ConfigurationManager;
 import GFS.utils.findFile;
 
@@ -18,7 +20,12 @@ public class Client {
     private static final Client client = new Client();
     // Name of the file to be copied to File System
     private static String fileName;
+    // Where to look for the file
     private static String path;
+    // Controller IP
+    private String controllerIP;
+    // Controller Port
+    private int controllerPort;
 
     public static Client getClientInstance() {
         return client;
@@ -32,6 +39,9 @@ public class Client {
             // Thread for taking user inputs from console
             UserInputThread inputThread = new UserInputThread(client);
             inputThread.start();
+
+            client.controllerIP = configManager.getServerIP();
+            client.controllerPort = configManager.getServerPort();
 
         } else {
             System.out.println("Incorrect Configuration.");
@@ -48,7 +58,18 @@ public class Client {
         ff.fileLookup(fileName, ff.getPath());
         if (ff.isPresent()){
             System.out.println("File Present");
-
+            ChunkCreator chunkCreator = new ChunkCreator(ff.getPath());
+            try {
+                int count = chunkCreator.getChunkCount();
+                System.out.println("Chunk Count is: " + count);
+                ChunkServerRequest request = new ChunkServerRequest(count, fileName);
+                byte[] requestArray = request.getByteArray();
+//                Socket clientSocket = new Socket(controllerIP, controllerPort);
+//                TCPSender sender = new TCPSender(clientSocket);
+//                sender.send_and_maintain(requestArray);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
 
     }

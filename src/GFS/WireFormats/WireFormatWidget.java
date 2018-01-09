@@ -40,4 +40,8 @@ public class WireFormatWidget {
     public int getType() {
         return type;
     }
+
+    public void getChunkAddress(){
+
+    }
 }

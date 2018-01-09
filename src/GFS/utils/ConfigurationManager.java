@@ -40,6 +40,8 @@ public class ConfigurationManager {
     private static final Pattern PATTERN = Pattern.compile(
             "^(([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.){3}([01]?\\d\\d?|2[0-4]\\d|25[0-5])$");
 
+
+
     public ConfigurationManager(int type){
         this.serverType = type;
     }
@@ -74,8 +76,8 @@ public class ConfigurationManager {
     private boolean checkValidityClient(String path){
         try {
             JSONObject jsonObject = readConfig(path);
-            serverIP = jsonObject.getString("controller_ip");
-            serverPort = jsonObject.getInt("controller_port");
+            serverIP = jsonObject.getString("Controller_IP");
+            serverPort = jsonObject.getInt("Controller_Port");
             // Check if IP is valid
             return isIPValid(serverIP) && isPortValid(serverPort);
 
