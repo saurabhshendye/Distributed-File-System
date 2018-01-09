@@ -1,5 +1,6 @@
 package GFS.Nodes;
 
+import GFS.Threads.UserInputThread;
 import GFS.Transport.TCPReceiver;
 import GFS.Transport.TCPSender;
 import GFS.utils.ConfigurationManager;
@@ -30,6 +31,9 @@ public class Controller {
             } catch (IOException e) {
                 e.printStackTrace();
             }
+
+            UserInputThread inputThread = new UserInputThread(controllerServer);
+            inputThread.start();
 
             // Listening for the connections
             while (true)

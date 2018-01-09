@@ -117,7 +117,8 @@ public class ConfigurationManager {
         try {
             JSONObject jsonObject = readConfig(path);
             localPort = jsonObject.getInt("Local_Port");
-            // Check if IP is valid
+
+            // Check if port is valid
             return isPortValid(localPort);
 
         } catch (JSONException e) {
@@ -132,7 +133,8 @@ public class ConfigurationManager {
      * @return
      */
     private boolean isPortValid(int port){
-        if (serverPort <= 1024 || serverPort > 65536){
+        System.out.println(port);
+        if (port <= 1024 || port > 65536){
             System.out.println("Invalid Port number. Port number should be greater than 1024 and less than 65536");
             return false;
         }

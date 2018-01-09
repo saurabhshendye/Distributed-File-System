@@ -2,6 +2,9 @@ package GFS.utils;
 
 import java.io.File;
 
+/**
+ * This class is used to find file in the given location
+ */
 public class findFile {
     private File path = new File("./");
     private boolean flag;

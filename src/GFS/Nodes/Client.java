@@ -9,7 +9,6 @@ import GFS.utils.ConfigurationManager;
 import GFS.utils.findFile;
 
 import java.io.IOException;
-import java.net.ServerSocket;
 import java.net.Socket;
 
 /**
@@ -53,20 +52,25 @@ public class Client {
         String [] parts = command.split(" ");
         // issue #1 unable to process files which have spaces in between
         String fileName = parts[1];
-        // This class is used to find file in the given location
+        // find file in the given location
         findFile ff = new findFile();
         ff.fileLookup(fileName, ff.getPath());
         if (ff.isPresent()){
             System.out.println("File Present");
             ChunkCreator chunkCreator = new ChunkCreator(ff.getPath());
             try {
+                // Get Chunk Count and create Chunk Server Request
                 int count = chunkCreator.getChunkCount();
                 System.out.println("Chunk Count is: " + count);
                 ChunkServerRequest request = new ChunkServerRequest(count, fileName);
                 byte[] requestArray = request.getByteArray();
-//                Socket clientSocket = new Socket(controllerIP, controllerPort);
-//                TCPSender sender = new TCPSender(clientSocket);
-//                sender.send_and_maintain(requestArray);
+
+                // Send the request
+                Socket clientSocket = new Socket(controllerIP, controllerPort);
+                TCPSender sender = new TCPSender(clientSocket);
+                TCPReceiver receiver = new TCPReceiver(clientSocket);
+                receiver.start();
+                sender.send_and_maintain(requestArray);
             } catch (IOException e) {
                 e.printStackTrace();
             }
