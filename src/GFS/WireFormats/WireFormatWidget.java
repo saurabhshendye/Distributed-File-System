@@ -44,4 +44,8 @@ public class WireFormatWidget {
     public void getChunkAddress(){
         System.out.println("Request Received");
     }
+
+    public void getChunkServerRegistered(){
+        System.out.println("Get Registered");
+    }
 }

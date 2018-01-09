@@ -8,8 +8,10 @@ import java.io.*;
  */
 
 public class ChunkServerRequest {
-    private int type = 1;               //File found indicator
+    private int type = 1;
+    // Number of chunks
     private int chunkCount;
+    // Name of the file which we want to store on this file system
     private String fileName;
 
     public ChunkServerRequest(int ChunkCount, String fileName) {

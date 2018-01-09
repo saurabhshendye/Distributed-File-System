@@ -1,6 +1,6 @@
 {
-  "controller_ip" : "1.2.3.4",
-  "controller_port" : "2000",
+  "controller_ip" : "129.82.44.141",
+  "controller_port" : "5001",
   "Local_Port": "7001",
   "Directory": ""
 }

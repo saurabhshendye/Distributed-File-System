@@ -35,6 +35,10 @@ public class TCPReceiver extends Thread {
                 int type = WireFormat.getType();
                 switch (type)
                 {
+                    case 0:
+                        System.out.println("Received Register request from chunk server");
+                        WireFormat.getChunkServerRegistered();
+                        break;
                     case 1:
                         System.out.println("Received request to get chunk server addresses");
                         WireFormat.getChunkAddress();
