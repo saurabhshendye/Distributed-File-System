@@ -68,7 +68,7 @@ public class Client {
                 // Send the request
                 Socket clientSocket = new Socket(controllerIP, controllerPort);
                 TCPSender sender = new TCPSender(clientSocket);
-                TCPReceiver receiver = new TCPReceiver(clientSocket);
+                TCPReceiver receiver = new TCPReceiver(clientSocket, this);
                 receiver.start();
                 sender.send_and_maintain(requestArray);
             } catch (IOException e) {

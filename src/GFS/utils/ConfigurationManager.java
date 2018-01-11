@@ -196,7 +196,7 @@ public class ConfigurationManager {
      * Getter Method
      * @return local port
      */
-    public int getLocalPort(){
+    public int getLocalServerPort(){
         return localPort;
     }
 

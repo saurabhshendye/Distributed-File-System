@@ -1,5 +1,11 @@
 package GFS.Threads;
 
+/**
+ * @auhor saurabhs
+ * This class runs as a separate thread and takes
+ * input from the console
+ */
+
 import GFS.Nodes.ChunkServer;
 import GFS.Nodes.Client;
 import GFS.Nodes.Controller;
@@ -10,9 +16,12 @@ import java.util.Scanner;
 public class UserInputThread extends Thread {
 
     private Object O;
-    private static final Class clientClass = Client.class;
-    private static final Class chunkClass = ChunkServer.class;
-    private static final Class controllerClass = Controller.class;
+    private static final Class CLIENT_CLASS = Client.class;
+    private static final Class CHUNK_SERVER_CLASS = ChunkServer.class;
+    private static final Class CONTROLLER_CLASS = Controller.class;
+
+    private Thread heartbeat5;
+    private Thread heartbeat30;
 
     /**
      *
@@ -23,10 +32,17 @@ public class UserInputThread extends Thread {
         this.O = obj;
     }
 
+    public UserInputThread(Object obj, Thread t5, Thread t30){
+        this.O = obj;
+        this.heartbeat5 = t5;
+        this.heartbeat30 = t30;
+    }
+
     @Override
     public void run() {
-        while (true) {
-            Scanner in = new Scanner(System.in);
+        Scanner in = null;
+        while (!isInterrupted()) {
+            in = new Scanner(System.in);
             System.out.println("Enter a Command: ");
             String command = in.nextLine();
             System.out.println("Input from User: " + command);
@@ -36,13 +52,15 @@ public class UserInputThread extends Thread {
                 e.printStackTrace();
             }
         }
+//        in.close();
+
     }
 
 
-    private static void input_parser(String command, Object obj) throws IOException {
+    private void input_parser(String command, Object obj) throws IOException {
         // Command Move to fs
         if (command.startsWith("mvfs ")) {
-            if (obj.getClass().equals(clientClass)){
+            if (obj.getClass().equals(CLIENT_CLASS)){
                 Client client = (Client) obj;
                 client.moveToFS(command);
             } else {
@@ -52,8 +70,16 @@ public class UserInputThread extends Thread {
         // Delete command
         else if (command.startsWith("del ")){
 
-        } else if (command.equalsIgnoreCase("EXIT")){
+        }
+        // if the object is chunk server then it needs to interrupt the
+        // heartbeat threads as well.
+        else if (command.equalsIgnoreCase("EXIT")){
             System.out.println("Exit Command Caught. Exiting...");
+            if (obj.getClass().equals(CHUNK_SERVER_CLASS)){
+                this.heartbeat5.interrupt();
+                this.heartbeat30.interrupt();
+            }
+            Thread.currentThread().interrupt();
             System.exit(0);
         }
         else {

@@ -1,26 +1,26 @@
 package GFS.WireFormats;
 
-import java.io.*;
+import java.io.BufferedOutputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
 
-/**
- * Wire Format for sending chunk count and file  to the Controller.
- * In response controller will give chuck server address for each chunk
- */
+public class Heartbeat30 {
 
-public class ChunkServerRequest {
-    private short type = 2;
+    private short type = 5;
     // Number of chunks
     private int chunkCount;
-    // Name of the file which we want to store on this file system
-    private String fileName;
 
-    public ChunkServerRequest(int ChunkCount, String fileName) {
+    public Heartbeat30 (int ChunkCount, String fileName) {
         this.chunkCount = ChunkCount;
-        this.fileName = fileName;
+    }
+
+    public Heartbeat30(){
+
     }
 
     /**
-     * Converts a request (count + file name) into byte array
+     *
      * @return byte array to be sent to the controller
      * @throws IOException
      */
@@ -29,15 +29,10 @@ public class ChunkServerRequest {
 
         ByteArrayOutputStream baopstream = new ByteArrayOutputStream();
         DataOutputStream dout = new DataOutputStream(new BufferedOutputStream(baopstream));
-        byte[] b = fileName.getBytes();
-
-        int Len = b.length + 4;
+        int Len = 4;
         dout.writeInt(type);
         dout.writeInt(Len);
-        dout.writeInt(chunkCount);
-        dout.write(b);
         dout.flush();
-
         byte[] marshaled = baopstream.toByteArray();
 
         baopstream.close();
