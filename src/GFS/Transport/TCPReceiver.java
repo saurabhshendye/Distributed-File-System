@@ -29,13 +29,13 @@ public class TCPReceiver extends Thread {
         this.socket = S;
         this.din = new DataInputStream(this.socket.getInputStream());
         this.object = object;
-        this.IpAddress = S.getRemoteSocketAddress().toString().replace("/", ":");
     }
 
     /**
      * This will run till connection for this particular socket breaks
      */
     public void run() {
+        this.IpAddress = this.socket.getRemoteSocketAddress().toString().replace("/", "");
         while (this.socket != null) {
             try {
                 int dataLength = din.readInt();

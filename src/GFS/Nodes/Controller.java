@@ -80,7 +80,6 @@ public class Controller {
     private void makeTempReceiverEntry(TCPReceiver receiver){
         String IpAndPort = receiver.getSocket().getRemoteSocketAddress().toString().replace("/","");
         tempReceiverMap.put(IpAndPort, receiver);
-        System.out.println(IpAndPort);
     }
 
     /**
