@@ -14,6 +14,7 @@ public class TCPReceiver extends Thread {
     private Socket socket;
     private DataInputStream din;
     private Object object;
+    private String IpAddress;
 
     private static final Class CLIENT_CLASS = Client.class;
     private static final Class CHUNK_SERVER_CLASS = ChunkServer.class;
@@ -26,8 +27,9 @@ public class TCPReceiver extends Thread {
      */
     public TCPReceiver(Socket S, Object object) throws IOException {
         this.socket = S;
-        din = new DataInputStream(this.socket.getInputStream());
+        this.din = new DataInputStream(this.socket.getInputStream());
         this.object = object;
+        this.IpAddress = S.getRemoteSocketAddress().toString().replace("/", ":");
     }
 
     /**
@@ -71,7 +73,11 @@ public class TCPReceiver extends Thread {
                 }
             }
             catch (IOException e) {
-                System.out.println("Error Message: " +e.getMessage());
+                if (object.getClass().equals(CONTROLLER_CLASS)){
+                    System.out.println("Error Message: " +e.getMessage());
+                    Controller controller = (Controller) object;
+                    controller.removeChunkServer(IpAddress);
+                }
                 break;
             }
         }

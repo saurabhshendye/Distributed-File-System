@@ -122,9 +122,13 @@ public class Controller {
         }catch (IOException e){
 
         }
+    }
 
-
-
-
+    public void removeChunkServer(String key){
+        if (chunkServerInfohMap.containsKey(key)){
+            chunkServerInfohMap.remove(key);
+            System.out.println("Chunk Server: " + key + " is disconnected and removed" +
+                    " from the registry");
+        }
     }
 }

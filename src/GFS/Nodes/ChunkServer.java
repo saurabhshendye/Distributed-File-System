@@ -8,6 +8,7 @@ import GFS.Transport.TCPSender;
 import GFS.WireFormats.ChunkRegisterReq;
 import GFS.utils.ConfigurationManager;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -71,6 +72,9 @@ public class ChunkServer {
             // For taking user input from console
             UserInputThread inputThread = new UserInputThread(chunkServer, heartbeatThread5, heartbeatThread30);
             inputThread.start();
+
+            File file = new File("/tmp");
+            System.out.println(file.getFreeSpace());
 
             // Listening for the connections
             while (true)
