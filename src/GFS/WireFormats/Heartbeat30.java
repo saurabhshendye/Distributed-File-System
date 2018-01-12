@@ -5,18 +5,16 @@ import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
-public class Heartbeat30 {
+public class Heartbeat30 implements WireFormatInterface {
 
     private short type = 5;
     // Number of chunks
     private int chunkCount;
+    private long freeMemory;
 
-    public Heartbeat30 (int ChunkCount, String fileName) {
+    public Heartbeat30 (int ChunkCount, long freeMemory) {
         this.chunkCount = ChunkCount;
-    }
-
-    public Heartbeat30(){
-
+        this.freeMemory = freeMemory;
     }
 
     /**

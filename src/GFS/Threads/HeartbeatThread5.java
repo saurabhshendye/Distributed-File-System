@@ -1,8 +1,10 @@
 package GFS.Threads;
 
+import GFS.Nodes.ChunkServer;
 import GFS.WireFormats.Heartbeat5;
 
-import java.io.IOException;
+
+import static GFS.Nodes.ChunkServer.PATH_TO_STORE_CHUNKS;
 
 /**
  * @author saurabhs
@@ -13,6 +15,12 @@ import java.io.IOException;
 
 public class HeartbeatThread5 extends Thread {
 
+    private ChunkServer chunkServer;
+
+    public HeartbeatThread5(ChunkServer chunkServer){
+        this.chunkServer = chunkServer;
+    }
+
     public void run(){
         while (!isInterrupted()){
             try {
@@ -21,12 +29,8 @@ public class HeartbeatThread5 extends Thread {
                 break;
             }
 
-            Heartbeat5 h5 = new Heartbeat5();
-            try {
-                h5.getByteArray();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            Heartbeat5 h5 = new Heartbeat5(chunkServer.getChunkCount(), PATH_TO_STORE_CHUNKS.getUsableSpace());
+            chunkServer.sendHeartbeat(h5);
         }
     }
 }

@@ -9,7 +9,7 @@ import java.io.IOException;
  * This WireFormat is for the chunk server to register
  * to the controller
  */
-public class ChunkRegisterReq {
+public class ChunkRegisterReq implements WireFormatInterface{
 
     // Port on which connection to controller is being done
     private short connectionPort;

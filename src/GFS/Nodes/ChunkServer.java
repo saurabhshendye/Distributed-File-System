@@ -6,6 +6,7 @@ import GFS.Threads.UserInputThread;
 import GFS.Transport.TCPReceiver;
 import GFS.Transport.TCPSender;
 import GFS.WireFormats.ChunkRegisterReq;
+import GFS.WireFormats.WireFormatInterface;
 import GFS.utils.ConfigurationManager;
 
 import java.io.File;
@@ -17,6 +18,10 @@ public class ChunkServer {
 
     private int port;
     private ServerSocket serverSocket;
+    private int chunkCount = 0;
+
+    public static final File PATH_TO_STORE_CHUNKS = new File("/tmp/");
+
 
     private static ChunkServer chunkServer = null;
     private static TCPSender controllerSender;
@@ -62,11 +67,11 @@ public class ChunkServer {
             System.out.println("Registered Successfully");
 
             // Start thread to send hearbeat every 5 minutes
-            HeartbeatThread5 heartbeatThread5 = new HeartbeatThread5();
+            HeartbeatThread5 heartbeatThread5 = new HeartbeatThread5(chunkServer);
             heartbeatThread5.start();
 
             // Start thread to send heartbeat every 30 seconds
-            HeartbeatThread30 heartbeatThread30 = new HeartbeatThread30();
+            HeartbeatThread30 heartbeatThread30 = new HeartbeatThread30(chunkServer);
             heartbeatThread30.start();
 
             // For taking user input from console
@@ -74,11 +79,12 @@ public class ChunkServer {
             inputThread.start();
 
             File file = new File("/tmp");
-            System.out.println(file.getFreeSpace());
+            File file1 = new File("/tmp/");
+            System.out.println("/tmp/" + file.getFreeSpace());
+            System.out.println("/tmp" + file1.getFreeSpace());
 
             // Listening for the connections
-            while (true)
-            {
+            while (true) {
                 Socket clSocket = chunkServer.serverSocket.accept();
                 TCPSender sender = new TCPSender(clSocket);
                 Thread tcpReceiver = new TCPReceiver(clSocket, chunkServer);
@@ -92,5 +98,13 @@ public class ChunkServer {
 
     public synchronized void setRegistered(){
         this.isRegistered = true;
+    }
+
+    public int getChunkCount(){
+        return chunkCount;
+    }
+
+    public void sendHeartbeat(WireFormatInterface wireFormat){
+
     }
 }

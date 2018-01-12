@@ -5,7 +5,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
-public class ChunkServerRegAck {
+public class ChunkServerRegAck implements WireFormatInterface {
 
     private short type = 1;
     private String message;

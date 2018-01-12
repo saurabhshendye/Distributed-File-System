@@ -7,7 +7,7 @@ import java.io.*;
  * In response controller will give chuck server address for each chunk
  */
 
-public class ChunkServerRequest {
+public class ChunkServerRequest implements WireFormatInterface {
     private short type = 2;
     // Number of chunks
     private int chunkCount;
