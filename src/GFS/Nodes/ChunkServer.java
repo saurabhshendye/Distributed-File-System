@@ -6,6 +6,7 @@ import GFS.Threads.UserInputThread;
 import GFS.Transport.TCPReceiver;
 import GFS.Transport.TCPSender;
 import GFS.WireFormats.ChunkRegisterReq;
+import GFS.WireFormats.Heartbeat5;
 import GFS.WireFormats.WireFormatInterface;
 import GFS.utils.ConfigurationManager;
 
@@ -24,7 +25,7 @@ public class ChunkServer {
 
 
     private static ChunkServer chunkServer = null;
-    private static TCPSender controllerSender;
+    private TCPSender controllerSender;
 
     private boolean isRegistered = false;
 
@@ -47,7 +48,7 @@ public class ChunkServer {
             Socket controllerSocket = new Socket(configManager.getServerIP(), configManager.getServerPort());
             TCPReceiver controllerReceiver = new TCPReceiver(controllerSocket, chunkServer);
             controllerReceiver.start();
-            controllerSender = new TCPSender(controllerSocket);
+            chunkServer.controllerSender = new TCPSender(controllerSocket);
 
             // Create Register Request
             short localPort = (short) controllerSocket.getLocalPort();
@@ -58,7 +59,7 @@ public class ChunkServer {
             byte [] bRequestArray = registerReq.getByteArray();
 
             // send Register request
-            controllerSender.send_and_maintain(bRequestArray);
+            chunkServer.controllerSender.send_and_maintain(bRequestArray);
 
             while (!chunkServer.isRegistered){
 
@@ -78,10 +79,6 @@ public class ChunkServer {
             UserInputThread inputThread = new UserInputThread(chunkServer, heartbeatThread5, heartbeatThread30);
             inputThread.start();
 
-            File file = new File("/tmp");
-            File file1 = new File("/tmp/");
-            System.out.println("/tmp/" + file.getFreeSpace());
-            System.out.println("/tmp" + file1.getFreeSpace());
 
             // Listening for the connections
             while (true) {
@@ -96,15 +93,30 @@ public class ChunkServer {
         }
     }
 
+    /**
+     * Setter for isRegistered
+     */
     public synchronized void setRegistered(){
         this.isRegistered = true;
     }
 
+    /**
+     *
+     * @return Chunk count
+     */
     public int getChunkCount(){
         return chunkCount;
     }
 
+    /**
+     * To sen the corresponding heartbeat
+     * @param wireFormat Wireformat corresponding to the heartbeat
+     */
     public void sendHeartbeat(WireFormatInterface wireFormat){
-
+        try {
+            chunkServer.controllerSender.send_and_maintain(wireFormat.getByteArray());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

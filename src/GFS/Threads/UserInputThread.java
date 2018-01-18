@@ -81,6 +81,11 @@ public class UserInputThread extends Thread {
             }
             Thread.currentThread().interrupt();
             System.exit(0);
+        } else if(command.equalsIgnoreCase("SHOW CHUNKSERVERS")){
+            if (obj.getClass().equals(CONTROLLER_CLASS)){
+                Controller controller = (Controller) obj;
+                controller.printChunkServerInfo();
+            }
         }
         else {
             System.out.println("Invalid Command");

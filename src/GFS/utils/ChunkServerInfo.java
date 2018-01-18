@@ -15,6 +15,7 @@ public class ChunkServerInfo {
     TCPReceiver receiver;
     String IP;
     short serverPort;
+    int chunkCount = 0;
 
     public ChunkServerInfo(TCPReceiver receiver, TCPSender sender, String IP,
                            short serverPort){
@@ -23,5 +24,9 @@ public class ChunkServerInfo {
         this.serverPort = serverPort;
         this.receiver = receiver;
         this.sender = sender;
+    }
+
+    public void setChunkCount(int chunkCount) {
+        this.chunkCount = chunkCount;
     }
 }

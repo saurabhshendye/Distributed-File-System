@@ -38,9 +38,11 @@ public class Heartbeat5 implements WireFormatInterface{
         ByteArrayOutputStream baopstream = new ByteArrayOutputStream();
         DataOutputStream dout = new DataOutputStream(new BufferedOutputStream(baopstream));
 
-        int Len = 4;
-        dout.writeInt(type);
+        int Len = 12;
+        dout.writeShort(type);
         dout.writeInt(Len);
+        dout.writeInt(chunkCount);
+        dout.writeLong(freeMemory);
         dout.flush();
         byte[] marshaled = baopstream.toByteArray();
 

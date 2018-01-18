@@ -7,7 +7,7 @@ import java.io.IOException;
 
 public class Heartbeat30 implements WireFormatInterface {
 
-    private short type = 5;
+    private short type = 30;
     // Number of chunks
     private int chunkCount;
     private long freeMemory;
@@ -27,9 +27,12 @@ public class Heartbeat30 implements WireFormatInterface {
 
         ByteArrayOutputStream baopstream = new ByteArrayOutputStream();
         DataOutputStream dout = new DataOutputStream(new BufferedOutputStream(baopstream));
-        int Len = 4;
-        dout.writeInt(type);
+
+        int Len = 12;
+        dout.writeShort(type);
         dout.writeInt(Len);
+        dout.writeInt(chunkCount);
+        dout.writeLong(freeMemory);
         dout.flush();
         byte[] marshaled = baopstream.toByteArray();
 

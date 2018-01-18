@@ -34,8 +34,11 @@ public class Controller {
     // chunk server will be stored in another data structure
     public HashMap<String, TCPReceiver> tempReceiverMap = new HashMap<>();
 
-    //
+    // Contains information about the chunk servers such as Ip
+    // connection port and server port
     private HashMap<String, ChunkServerInfo> chunkServerInfohMap = new HashMap<>();
+
+    private HashMap <String, Long> freeMemoryMap = new HashMap<>();
 
     private static Controller controllerServer = null;
 
@@ -119,7 +122,7 @@ public class Controller {
             }
 
         }catch (IOException e){
-
+            e.printStackTrace();
         }
     }
 
@@ -130,4 +133,74 @@ public class Controller {
                     " from the registry");
         }
     }
+
+    /**
+     * To process Major Heartbeat from the Chunk Server
+     * @param data Heartbeat data in the form of byte array
+     * @param socket Socket from which the heartbeat was received.
+     */
+    public void processMajorHeartbeat(byte [] data, Socket socket){
+        try {
+            String IpandPort = socket.getRemoteSocketAddress().toString().replace("/","");
+            ByteArrayInputStream bin = new ByteArrayInputStream(data);
+            DataInputStream din = new DataInputStream(new BufferedInputStream(bin));
+
+            int chunkcount = din.readInt();
+            Long freeMemory = din.readLong();
+
+            freeMemoryMap.put(IpandPort, freeMemory);
+
+            if (chunkServerInfohMap.containsKey(IpandPort)){
+                System.out.println("Key found to update data Major Heartbeat");
+                ChunkServerInfo chunkServerInfo = chunkServerInfohMap.get(IpandPort);
+                chunkServerInfo.setChunkCount(chunkcount);
+            }
+            din.close();
+            bin.close();
+
+        }catch (IOException e){
+
+        }
+    }
+
+    /**
+     * To process minor heartbeat
+     * @param data Heartbeat data byte array
+     * @param socket socket from which the heartbeat was received
+     *               This is used to get key for hashmaps
+     */
+    public void processMinorHeartbeat(byte [] data, Socket socket){
+        try {
+            String IpandPort = socket.getRemoteSocketAddress().toString().replace("/","");
+            ByteArrayInputStream bin = new ByteArrayInputStream(data);
+            DataInputStream din = new DataInputStream(new BufferedInputStream(bin));
+
+            int chunkcount = din.readInt();
+            Long freeMemory = din.readLong();
+
+            freeMemoryMap.put(IpandPort, freeMemory);
+
+            if (chunkServerInfohMap.containsKey(IpandPort)){
+                System.out.println("Key found to update data Minor Heartbeat");
+                ChunkServerInfo chunkServerInfo = chunkServerInfohMap.get(IpandPort);
+                chunkServerInfo.setChunkCount(chunkcount);
+            }
+
+            din.close();
+            bin.close();
+
+        } catch (IOException e){
+
+        }
+    }
+
+    /**
+     * To print out the chunk server information
+     */
+    public void printChunkServerInfo(){
+        for (ChunkServerInfo chunkServerInfo: chunkServerInfohMap.values()){
+            System.out.println();
+        }
+    }
 }
+

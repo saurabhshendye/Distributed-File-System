@@ -60,13 +60,20 @@ public class TCPReceiver extends Thread {
                             ChunkServer chunkServer = (ChunkServer) object;
                             chunkServer.setRegistered();
                         }
-
                         break;
                     case 5:
-                        System.out.println("Major Heartbeat received");
+                        if (object.getClass().equals(CONTROLLER_CLASS)){
+                            System.out.println("Major Heartbeat received");
+                            Controller controller = (Controller) object;
+                            controller.processMajorHeartbeat(wireFormat.getIdentifier(), socket);
+                        }
                         break;
                     case 30:
-                        System.out.println("Minor Heartbeat Received");
+                        if (object.getClass().equals(CONTROLLER_CLASS)){
+                            System.out.println("Minor Heartbeat Received");
+                            Controller controller = (Controller) object;
+                            controller.processMinorHeartbeat(wireFormat.getIdentifier(), socket);
+                        }
                         break;
                     default: System.out.println("Unknown Message");
                         break;
@@ -74,7 +81,8 @@ public class TCPReceiver extends Thread {
             }
             catch (IOException e) {
                 if (object.getClass().equals(CONTROLLER_CLASS)){
-                    System.out.println("Error Message: " +e.getMessage());
+                    System.out.println("Error Message: ");
+                    e.printStackTrace();
                     Controller controller = (Controller) object;
                     controller.removeChunkServer(IpAddress);
                 }
