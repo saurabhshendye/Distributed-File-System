@@ -75,6 +75,11 @@ public class TCPReceiver extends Thread {
                             client.processAddresses(wireFormat.getIdentifier());
                         }
                         break;
+                    case 4:
+                        if (object.getClass().equals(CHUNK_SERVER_CLASS)){
+                            System.out.println("Chunk Received from Client");
+                        }
+                        break;
                     case 5:
                         if (object.getClass().equals(CONTROLLER_CLASS)){
                             System.out.println("Major Heartbeat received");

@@ -250,8 +250,13 @@ public class Controller {
             }
             i++;
             builder.append("_");
-            builder.append(entry.getKey());
-
+            ChunkServerInfo chunkServerInfo = chunkServerInfohMap.get(entry.getKey());
+            String IP = chunkServerInfo.IP.split(":")[0];
+            builder.append(IP);
+            builder.append(":");
+            builder.append(chunkServerInfo.serverPort);
+            System.out.println("Server Port" + chunkServerInfo.serverPort);
+//            builder.append(entry.getKey());
         }
 
         // Send the address String to the Client

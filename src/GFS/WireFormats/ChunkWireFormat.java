@@ -15,10 +15,13 @@ public class ChunkWireFormat implements WireFormatInterface {
 
     private String fileName;
 
-    public ChunkWireFormat(String fileName, int chunkNumber, byte[] chunkArray){
+    private String[] addresses;
+
+    public ChunkWireFormat(String fileName, int chunkNumber, byte[] chunkArray, String [] addresses){
         this.fileName = fileName;
         this.chunkNumber = chunkNumber;
         this.chunkArray = chunkArray;
+        this.addresses = addresses;
     }
 
     @Override
@@ -30,12 +33,18 @@ public class ChunkWireFormat implements WireFormatInterface {
         int fileNamelength = fileNameArray.length;
         int chunkArrayLen = chunkArray.length;
 
+        String addressString = addresses[2] + addresses[3];
+        byte[] addressBytes = addressString.getBytes();
+        int addressesLen = addressBytes.length;
+
         dout.writeShort(type);
         dout.writeInt(fileNamelength);
         dout.writeInt(chunkNumber);
         dout.write(fileNameArray);
         dout.write(chunkArrayLen);
         dout.write(chunkArray);
+        dout.writeInt(addressesLen);
+        dout.write(addressBytes);
         dout.flush();
 
         byte[] marshaled = baopstream.toByteArray();
@@ -44,6 +53,5 @@ public class ChunkWireFormat implements WireFormatInterface {
         dout.close();
 
         return marshaled;
-
     }
 }

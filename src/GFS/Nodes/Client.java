@@ -63,7 +63,7 @@ public class Client {
     public void moveToFS(String command){
         String [] parts = command.split(" ");
         // issue #1 unable to process files which have spaces in between
-        String fileName = parts[1];
+        fileName = parts[1];
         // find file in the given location
         ff = new FindFile();
         ff.fileLookup(fileName, ff.getPath());
@@ -107,11 +107,20 @@ public class Client {
         String addressString = new String(data);
         String [] addresses = addressString.split("_");
         int chunkNumber = Integer.parseInt(addresses[0]);
-        System.out.println(addresses[1]);
+//        System.out.println(addresses[1]);
 //        Socket chunkSocket = new Socket()
+        String firstIPPort = addresses[1];
+        System.out.println(firstIPPort);
+        String firstIP = firstIPPort.split(":")[0];
+        int port = Integer.parseInt(firstIPPort.split(":")[1]);
         try {
             byte [] chunkByteArray = chunkCreator.getNextChunk();
-            ChunkWireFormat chunkWireFormat = new ChunkWireFormat(fileName, chunkNumber, chunkByteArray);
+            ChunkWireFormat chunkWireFormat = new ChunkWireFormat(fileName, chunkNumber, chunkByteArray,addresses);
+//            System.out.println(firstIP);
+//            System.out.println(port);
+            Socket chunkSocket = new Socket(firstIP, port);
+            TCPSender chunkSender = new TCPSender(chunkSocket);
+            chunkSender.send_data(chunkWireFormat.getByteArray());
         } catch (IOException e) {
             e.printStackTrace();
         }

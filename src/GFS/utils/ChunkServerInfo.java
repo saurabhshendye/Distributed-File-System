@@ -11,11 +11,11 @@ import GFS.Transport.TCPSender;
  */
 public class ChunkServerInfo {
 
-    TCPSender sender;
-    TCPReceiver receiver;
-    String IP;
-    short serverPort;
-    int chunkCount = 0;
+    public TCPSender sender;
+    public TCPReceiver receiver;
+    public String IP;
+    public short serverPort;
+    public int chunkCount = 0;
 
     public ChunkServerInfo(TCPReceiver receiver, TCPSender sender, String IP,
                            short serverPort){
