@@ -6,7 +6,6 @@ import GFS.Threads.UserInputThread;
 import GFS.Transport.TCPReceiver;
 import GFS.Transport.TCPSender;
 import GFS.WireFormats.ChunkRegisterReq;
-import GFS.WireFormats.Heartbeat5;
 import GFS.WireFormats.WireFormatInterface;
 import GFS.utils.ConfigurationManager;
 
@@ -43,7 +42,6 @@ public class ChunkServer {
                 e.printStackTrace();
             }
 
-
             // Get registered on Controller
             Socket controllerSocket = new Socket(configManager.getServerIP(), configManager.getServerPort());
             TCPReceiver controllerReceiver = new TCPReceiver(controllerSocket, chunkServer);
@@ -78,7 +76,6 @@ public class ChunkServer {
             // For taking user input from console
             UserInputThread inputThread = new UserInputThread(chunkServer, heartbeatThread5, heartbeatThread30);
             inputThread.start();
-
 
             // Listening for the connections
             while (true) {

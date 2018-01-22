@@ -9,14 +9,14 @@ import java.io.*;
 
 public class ChunkServerRequest implements WireFormatInterface {
     private short type = 2;
-    // Number of chunks
-    private int chunkCount;
-    // Name of the file which we want to store on this file system
+    // Chunk Number
+    private int chunkNumber;
+//    // Name of the file which we want to store on this file system
     private String fileName;
 
-    public ChunkServerRequest(int ChunkCount, String fileName) {
-        this.chunkCount = ChunkCount;
+    public ChunkServerRequest(String fileName, int chunkNumber) {
         this.fileName = fileName;
+        this.chunkNumber = chunkNumber;
     }
 
     /**
@@ -32,9 +32,9 @@ public class ChunkServerRequest implements WireFormatInterface {
         byte[] b = fileName.getBytes();
 
         int Len = b.length + 4;
-        dout.writeInt(type);
+        dout.writeShort(type);
         dout.writeInt(Len);
-        dout.writeInt(chunkCount);
+        dout.writeInt(chunkNumber);
         dout.write(b);
         dout.flush();
 

@@ -5,26 +5,22 @@ import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
-public class ChunkServerRegAck implements WireFormatInterface {
+public class ServerAddresses implements WireFormatInterface {
 
-    private final short type = 1;
-    private String message;
+    private final short type = 3;
+    private String addressString;
 
-    public ChunkServerRegAck(String message) {
-       this.message = message;
+    public ServerAddresses(String address){
+        this.addressString = address;
     }
 
-    /**
-     * Converts a request (count + file name) into byte array
-     * @return byte array to be sent to the controller
-     * @throws IOException
-     */
 
-    public byte [] getByteArray() throws IOException {
-
+    @Override
+    public byte[] getByteArray() throws IOException {
         ByteArrayOutputStream baopstream = new ByteArrayOutputStream();
         DataOutputStream dout = new DataOutputStream(new BufferedOutputStream(baopstream));
-        byte[] b = message.getBytes();
+
+        byte[] b = addressString.getBytes();
 
         int Len = b.length;
         dout.writeShort(type);

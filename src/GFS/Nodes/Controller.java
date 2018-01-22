@@ -10,6 +10,7 @@ import GFS.Threads.UserInputThread;
 import GFS.Transport.TCPReceiver;
 import GFS.Transport.TCPSender;
 import GFS.WireFormats.ChunkServerRegAck;
+import GFS.WireFormats.ServerAddresses;
 import GFS.utils.ChunkServerInfo;
 import GFS.utils.ConfigurationManager;
 
@@ -19,7 +20,7 @@ import java.io.DataInputStream;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.HashMap;
+import java.util.*;
 
 public class Controller {
 
@@ -35,11 +36,17 @@ public class Controller {
     public HashMap<String, TCPReceiver> tempReceiverMap = new HashMap<>();
 
     // Contains information about the chunk servers such as Ip
-    // connection port and server port
+    // connection port and server port Chunk count
     private HashMap<String, ChunkServerInfo> chunkServerInfohMap = new HashMap<>();
 
+    // Temporary hashmap for tracking free memory in chunk servers
+    // this is a unsorted map
     private HashMap <String, Long> freeMemoryMap = new HashMap<>();
 
+    // Sorted Free memory map
+    private Map<String,Long> sortedMemoryMap;
+
+    // Controller Instance
     private static Controller controllerServer = null;
 
     public static boolean isInterrupted = false;
@@ -132,6 +139,10 @@ public class Controller {
             System.out.println("Chunk Server: " + key + " is disconnected and removed" +
                     " from the registry");
         }
+
+        if (freeMemoryMap.containsKey(key)){
+            freeMemoryMap.remove(key);
+        }
     }
 
     /**
@@ -139,7 +150,7 @@ public class Controller {
      * @param data Heartbeat data in the form of byte array
      * @param socket Socket from which the heartbeat was received.
      */
-    public void processMajorHeartbeat(byte [] data, Socket socket){
+    public synchronized void processMajorHeartbeat(byte [] data, Socket socket){
         try {
             String IpandPort = socket.getRemoteSocketAddress().toString().replace("/","");
             ByteArrayInputStream bin = new ByteArrayInputStream(data);
@@ -148,15 +159,17 @@ public class Controller {
             int chunkcount = din.readInt();
             Long freeMemory = din.readLong();
 
-            freeMemoryMap.put(IpandPort, freeMemory);
-
             if (chunkServerInfohMap.containsKey(IpandPort)){
                 System.out.println("Key found to update data Major Heartbeat");
                 ChunkServerInfo chunkServerInfo = chunkServerInfohMap.get(IpandPort);
                 chunkServerInfo.setChunkCount(chunkcount);
+                freeMemoryMap.put(IpandPort, freeMemory);
             }
             din.close();
             bin.close();
+            sortedMemoryMap = sortByValues(freeMemoryMap);
+
+//            printChunkServerInfo();
 
         }catch (IOException e){
 
@@ -169,7 +182,7 @@ public class Controller {
      * @param socket socket from which the heartbeat was received
      *               This is used to get key for hashmaps
      */
-    public void processMinorHeartbeat(byte [] data, Socket socket){
+    public synchronized void processMinorHeartbeat(byte [] data, Socket socket){
         try {
             String IpandPort = socket.getRemoteSocketAddress().toString().replace("/","");
             ByteArrayInputStream bin = new ByteArrayInputStream(data);
@@ -184,7 +197,10 @@ public class Controller {
                 System.out.println("Key found to update data Minor Heartbeat");
                 ChunkServerInfo chunkServerInfo = chunkServerInfohMap.get(IpandPort);
                 chunkServerInfo.setChunkCount(chunkcount);
+
             }
+//            printChunkServerInfo();
+            sortedMemoryMap = sortByValues(freeMemoryMap);
 
             din.close();
             bin.close();
@@ -198,9 +214,77 @@ public class Controller {
      * To print out the chunk server information
      */
     public void printChunkServerInfo(){
-        for (ChunkServerInfo chunkServerInfo: chunkServerInfohMap.values()){
-            System.out.println();
+        for (Long freeMemory: sortedMemoryMap.values()){
+            System.out.println(freeMemory);
         }
+    }
+
+    /**
+     * Sends back three ChunkServer addresses for a
+     * given chunk
+     */
+    public void serveAllotmentRequest(byte[] data, Socket socket){
+
+        int chunkNumber = 0;
+        try {
+            ByteArrayInputStream bin = new ByteArrayInputStream(data);
+            DataInputStream din = new DataInputStream(new BufferedInputStream(bin));
+
+            chunkNumber = din.readInt();
+            din.close();
+        }catch (IOException e){
+
+        }
+
+        String IpandPort = socket.getRemoteSocketAddress().toString().replace("/","");
+        int i = 0;
+        StringBuilder builder = new StringBuilder();
+        builder.append(chunkNumber);
+
+        // Get top 3 servers with highest free memory
+        // and build the address string
+        for (Map.Entry<String, Long> entry : sortedMemoryMap.entrySet()) {
+            // So that only 3 addresses will be provided
+            if (i>2){
+                break;
+            }
+            i++;
+            builder.append("_");
+            builder.append(entry.getKey());
+
+        }
+
+        // Send the address String to the Client
+        ServerAddresses serverAddresses = new ServerAddresses(builder.toString());
+        try {
+            TCPSender tcpSender = new TCPSender(socket);
+            tcpSender.send_and_maintain(serverAddresses.getByteArray());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private Map<String, Long> sortByValues(HashMap<String, Long> unsortMap){
+        // 1. Convert Map to List of Map
+        List<Map.Entry<String, Long>> list =
+                new LinkedList<Map.Entry<String, Long>>(unsortMap.entrySet());
+
+        // 2. Sort list with Collections.sort(), provide a custom Comparator
+        //    Try switch the o1 o2 position for a different order
+        Collections.sort(list, new Comparator<Map.Entry<String, Long>>() {
+            public int compare(Map.Entry<String, Long> o1,
+                               Map.Entry<String, Long> o2) {
+                return (o2.getValue()).compareTo(o1.getValue());
+            }
+        });
+
+        // 3. Loop the sorted list and put it into a new insertion order Map LinkedHashMap
+        Map<String, Long> sortedMap = new LinkedHashMap<String, Long>();
+        for (Map.Entry<String, Long> entry : list) {
+            sortedMap.put(entry.getKey(), entry.getValue());
+        }
+
+        return sortedMap;
     }
 }
 

@@ -36,9 +36,5 @@ public class HeartbeatThread30 extends Thread {
             chunkServer.sendHeartbeat(msg);
 
         }
-
-
-
-
     }
 }

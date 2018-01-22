@@ -61,6 +61,20 @@ public class TCPReceiver extends Thread {
                             chunkServer.setRegistered();
                         }
                         break;
+                    case 2:
+                        if (object.getClass().equals(CONTROLLER_CLASS)){
+                            System.out.println("Chunkserver allotment request received");
+                            Controller controller = (Controller) object;
+                            controller.serveAllotmentRequest(wireFormat.getIdentifier(), socket);
+                        }
+                        break;
+                    case 3:
+                        if (object.getClass().equals(CLIENT_CLASS)){
+                            System.out.println("Server Addressees received from the Controller");
+                            Client client = (Client) object;
+                            client.processAddresses(wireFormat.getIdentifier());
+                        }
+                        break;
                     case 5:
                         if (object.getClass().equals(CONTROLLER_CLASS)){
                             System.out.println("Major Heartbeat received");
@@ -82,7 +96,7 @@ public class TCPReceiver extends Thread {
             catch (IOException e) {
                 if (object.getClass().equals(CONTROLLER_CLASS)){
                     System.out.println("Error Message: ");
-                    e.printStackTrace();
+//                    e.printStackTrace();
                     Controller controller = (Controller) object;
                     controller.removeChunkServer(IpAddress);
                 }

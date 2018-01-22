@@ -4,10 +4,14 @@ import GFS.Threads.UserInputThread;
 import GFS.Transport.TCPReceiver;
 import GFS.Transport.TCPSender;
 import GFS.WireFormats.ChunkServerRequest;
+import GFS.WireFormats.ChunkWireFormat;
 import GFS.utils.ChunkCreator;
 import GFS.utils.ConfigurationManager;
-import GFS.utils.findFile;
+import GFS.utils.FindFile;
 
+import java.io.BufferedInputStream;
+import java.io.ByteArrayInputStream;
+import java.io.DataInputStream;
 import java.io.IOException;
 import java.net.Socket;
 
@@ -25,6 +29,10 @@ public class Client {
     private String controllerIP;
     // Controller Port
     private int controllerPort;
+    //
+    private FindFile ff;
+    //
+    private ChunkCreator chunkCreator;
 
     public static Client getClientInstance() {
         return client;
@@ -48,33 +56,64 @@ public class Client {
         }
     }
 
+    /**
+     * Checks if the file is present and if it is moves the file to DFS
+     * @param command Complete command with file name to be moved to DFS
+     */
     public void moveToFS(String command){
         String [] parts = command.split(" ");
         // issue #1 unable to process files which have spaces in between
         String fileName = parts[1];
         // find file in the given location
-        findFile ff = new findFile();
+        ff = new FindFile();
         ff.fileLookup(fileName, ff.getPath());
         if (ff.isPresent()){
             System.out.println("File Present");
-            ChunkCreator chunkCreator = new ChunkCreator(ff.getPath());
-            try {
-                // Get Chunk Count and create Chunk Server Request
-                int count = chunkCreator.getChunkCount();
-                System.out.println("Chunk Count is: " + count);
-                ChunkServerRequest request = new ChunkServerRequest(count, fileName);
-                byte[] requestArray = request.getByteArray();
 
-                // Send the request
+            try {
+                chunkCreator = new ChunkCreator(ff.getPath());
+                // Collect details about file
+                chunkCreator.gatherDetails();
+
                 Socket clientSocket = new Socket(controllerIP, controllerPort);
                 TCPSender sender = new TCPSender(clientSocket);
                 TCPReceiver receiver = new TCPReceiver(clientSocket, this);
                 receiver.start();
-                sender.send_and_maintain(requestArray);
+                // Get Chunk Count and create Chunk Server Request
+                int count = chunkCreator.getChunkCount();
+                System.out.println("Chunk Count is: " + count);
+
+                // Create the request amd get the byte array
+                ChunkServerRequest request = null;
+                byte[] requestArray = null;
+
+                // Send the request for number of times
+                // equal to chunk count
+                for (int i = 0; i<count; i++){
+                    request = new ChunkServerRequest(fileName, i);
+                    requestArray = request.getByteArray();
+                    sender.send_and_maintain(requestArray);
+                }
+
             } catch (IOException e) {
                 e.printStackTrace();
             }
+        } else {
+            System.out.println("File not found");
         }
+    }
 
+    public void processAddresses(byte[] data){
+        String addressString = new String(data);
+        String [] addresses = addressString.split("_");
+        int chunkNumber = Integer.parseInt(addresses[0]);
+        System.out.println(addresses[1]);
+//        Socket chunkSocket = new Socket()
+        try {
+            byte [] chunkByteArray = chunkCreator.getNextChunk();
+            ChunkWireFormat chunkWireFormat = new ChunkWireFormat(fileName, chunkNumber, chunkByteArray);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }
