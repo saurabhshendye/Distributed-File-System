@@ -9,8 +9,7 @@ import GFS.WireFormats.ChunkRegisterReq;
 import GFS.WireFormats.WireFormatInterface;
 import GFS.utils.ConfigurationManager;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 
@@ -115,5 +114,42 @@ public class ChunkServer {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public void processChunk(byte[] data){
+        try {
+            System.out.println("Totoal Lengh: " + data.length);
+
+            ByteArrayInputStream bin = new ByteArrayInputStream(data);
+            DataInputStream din = new DataInputStream(new BufferedInputStream(bin));
+
+            // Read File Name
+            int fileNameLength = din.readInt();
+            byte [] fileNameArray = new byte[fileNameLength];
+            int bytesread = din.read(fileNameArray);
+            System.out.println("fileNameArray bytes read: " + bytesread);
+            System.out.println("File Name: " + new String(fileNameArray));
+
+            // Read Chunk Number
+            int chunkNumber = din.readInt();
+            System.out.println("Chunk Number Received: " + chunkNumber);
+
+            // Read the chunk
+            int chunkLength = din.readInt();
+            byte[] chunkArray = new byte[chunkLength];
+            int chunkbytes = din.read(chunkArray);
+            System.out.println("Number of bytes in a chunk: " + chunkbytes);
+
+            // Read Rest of the addresses
+            int addrLen = din.readInt();
+            byte[] addrArray = new byte[addrLen];
+            din.readFully(addrArray);
+
+            String addresses = new String(addrArray);
+            System.out.println(addresses);
+        } catch (IOException e){
+            e.printStackTrace();
+        }
+
     }
 }

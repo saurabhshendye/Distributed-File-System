@@ -30,7 +30,7 @@ public class WireFormatWidget {
         this.type = din.readShort();
         int Len = din.readInt();
         byte[] data = new byte[Len];
-
+        System.out.println("Length received: " + Len);
         din.readFully(data);
         this.identifier = data;
 

@@ -118,6 +118,7 @@ public class Client {
             ChunkWireFormat chunkWireFormat = new ChunkWireFormat(fileName, chunkNumber, chunkByteArray,addresses);
 //            System.out.println(firstIP);
 //            System.out.println(port);
+            System.out.println("Chunk Length: " + chunkWireFormat.getByteArray().length);
             Socket chunkSocket = new Socket(firstIP, port);
             TCPSender chunkSender = new TCPSender(chunkSocket);
             chunkSender.send_data(chunkWireFormat.getByteArray());

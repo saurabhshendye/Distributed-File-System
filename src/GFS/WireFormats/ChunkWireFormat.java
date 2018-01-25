@@ -32,16 +32,21 @@ public class ChunkWireFormat implements WireFormatInterface {
         byte [] fileNameArray = fileName.getBytes();
         int fileNamelength = fileNameArray.length;
         int chunkArrayLen = chunkArray.length;
+        System.out.println("fileNamelength: " +fileNamelength);
 
         String addressString = addresses[2] + addresses[3];
         byte[] addressBytes = addressString.getBytes();
         int addressesLen = addressBytes.length;
+        System.out.println("addressesLen: " + addressesLen);
+
+        int totalLength = fileNamelength + 4 + 4 + chunkArrayLen + 4 + addressesLen + 4;
 
         dout.writeShort(type);
+        dout.writeInt(totalLength);
         dout.writeInt(fileNamelength);
-        dout.writeInt(chunkNumber);
         dout.write(fileNameArray);
-        dout.write(chunkArrayLen);
+        dout.writeInt(chunkNumber);
+        dout.writeInt(chunkArrayLen);
         dout.write(chunkArray);
         dout.writeInt(addressesLen);
         dout.write(addressBytes);
