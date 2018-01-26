@@ -7,7 +7,6 @@ import java.util.HashMap;
 public class ChunkCreator {
     private File file;
     private static final int CHUNK_SIZE = 65536;
-    private int chunkCount;
     private RandomAccessFile rf;
 
     private int totalChunks;
@@ -28,6 +27,7 @@ public class ChunkCreator {
      */
     public int getChunkCount() throws IOException{
         int count = 0;
+        System.out.println("File length: " + rf.length());
         if ((int) rf.length()%CHUNK_SIZE == 0){
             count = (int) rf.length()/CHUNK_SIZE;
         } else {
@@ -62,23 +62,25 @@ public class ChunkCreator {
      * @return chunk byte array
      * @throws IOException
      */
-
     public byte[] getNextChunk() throws IOException{
         byte [] b = null;
         int byteCount = 0;
         if (j == totalChunks && lastChunkLength!=0){
             byteCount = lastChunkLength;
             b = new byte[lastChunkLength];
+            j++;
         } else {
             byteCount = CHUNK_SIZE;
             b = new byte[CHUNK_SIZE];
+            j++;
         }
-        rf.read(b,i,byteCount);
+        rf.readFully(b);
+        i+=byteCount;
         return b;
     }
 
     public void gatherDetails() throws IOException{
-        totalChunks = (int) (rf.length()/CHUNK_SIZE);
+        totalChunks = getChunkCount();
         lastChunkLength = (int)rf.length() % CHUNK_SIZE;
     }
 }

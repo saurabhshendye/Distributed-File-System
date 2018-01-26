@@ -76,14 +76,12 @@ public class TCPReceiver extends Thread {
                         }
                         break;
                     case 4:
-                        System.out.println("Chunk Received.......");
                         if (object.getClass().equals(CHUNK_SERVER_CLASS)){
                             System.out.println("Chunk Received from Client");
                             ChunkServer chunkServer = (ChunkServer) object;
                             System.out.println("Chunk Length: " + wireFormat.getIdentifier().length);
                             chunkServer.processChunk(wireFormat.getIdentifier());
                         }
-                        System.out.println("Out of if....");
                         break;
                     case 5:
                         if (object.getClass().equals(CONTROLLER_CLASS)){
@@ -104,6 +102,7 @@ public class TCPReceiver extends Thread {
                 }
             }
             catch (IOException e) {
+                System.out.println("Error Class" + e.getClass().getName());
 //                e.printStackTrace();
                 if (object.getClass().equals(CONTROLLER_CLASS)){
                     System.out.println("Error Message: ");
