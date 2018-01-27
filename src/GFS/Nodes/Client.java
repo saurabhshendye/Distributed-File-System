@@ -114,8 +114,11 @@ public class Client {
         String firstIP = firstIPPort.split(":")[0];
         int port = Integer.parseInt(firstIPPort.split(":")[1]);
         try {
+            // Address String to be forwarded
+            String frwdAddrString = addresses[2] + "_" + addresses[3];
             byte [] chunkByteArray = chunkCreator.getNextChunk();
-            ChunkWireFormat chunkWireFormat = new ChunkWireFormat(fileName, chunkNumber, chunkByteArray,addresses);
+            ChunkWireFormat chunkWireFormat = new ChunkWireFormat(fileName, chunkNumber,
+                    chunkByteArray,frwdAddrString, 2);
 //            System.out.println(firstIP);
 //            System.out.println(port);
             System.out.println("Chunk Length: " + chunkWireFormat.getByteArray().length);

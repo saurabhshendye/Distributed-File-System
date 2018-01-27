@@ -4,12 +4,12 @@ import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
-public class sha1 {
+public class Sha1 {
 
     /**
      * Constructor
      */
-    public sha1(){
+    public Sha1(){
 
     }
 
