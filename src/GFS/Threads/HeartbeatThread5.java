@@ -29,8 +29,11 @@ public class HeartbeatThread5 extends Thread {
                 break;
             }
 
-            Heartbeat5 h5 = new Heartbeat5(chunkServer.getChunkCount(), PATH_TO_STORE_CHUNKS.getUsableSpace());
-            chunkServer.sendHeartbeat(h5);
+            if (chunkServer.getisRegistered()){
+                Heartbeat5 h5 = new Heartbeat5(chunkServer.getChunkCount(), PATH_TO_STORE_CHUNKS.getUsableSpace());
+                chunkServer.sendHeartbeat(h5);
+            }
+
         }
     }
 }

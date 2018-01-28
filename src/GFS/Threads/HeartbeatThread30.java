@@ -32,9 +32,10 @@ public class HeartbeatThread30 extends Thread {
                 e.printStackTrace();
             }
 
-            Heartbeat30 msg = new Heartbeat30(chunkServer.getChunkCount(), PATH_TO_STORE_CHUNKS.getUsableSpace());
-            chunkServer.sendHeartbeat(msg);
-
+            if (chunkServer.getisRegistered()){
+                Heartbeat30 msg = new Heartbeat30(chunkServer.getChunkCount(), PATH_TO_STORE_CHUNKS.getUsableSpace());
+                chunkServer.sendHeartbeat(msg);
+            }
         }
     }
 }

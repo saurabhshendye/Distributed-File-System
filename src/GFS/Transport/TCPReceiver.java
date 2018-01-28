@@ -63,7 +63,7 @@ public class TCPReceiver extends Thread {
                         break;
                     case 2:
                         if (object.getClass().equals(CONTROLLER_CLASS)){
-                            System.out.println("Chunkserver allotment request received");
+                            System.out.println("Chunk Server allotment request received");
                             Controller controller = (Controller) object;
                             controller.serveAllotmentRequest(wireFormat.getIdentifier(), socket);
                         }

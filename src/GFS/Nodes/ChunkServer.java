@@ -61,13 +61,8 @@ public class ChunkServer {
             // send Register request
             chunkServer.controllerSender.send_and_maintain(bRequestArray);
 
-            while (!chunkServer.isRegistered){
-
-            }
-
-            System.out.println("Registered Successfully");
-
-            // Start thread to send hearbeat every 5 minutes
+            // Initializing Heartbeat threads
+            // Start thread to send heartbeat every 5 minutes
             HeartbeatThread5 heartbeatThread5 = new HeartbeatThread5(chunkServer);
             heartbeatThread5.start();
 
@@ -98,6 +93,11 @@ public class ChunkServer {
     public synchronized void setRegistered(){
         this.isRegistered = true;
     }
+
+    public synchronized boolean getisRegistered(){
+        return isRegistered;
+    }
+
 
     /**
      *
