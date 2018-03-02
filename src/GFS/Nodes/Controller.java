@@ -167,7 +167,7 @@ public class Controller {
             }
             din.close();
             bin.close();
-            sortedMemoryMap = sortByValues(freeMemoryMap);
+            sortedMemoryMap = sortByMemValues(freeMemoryMap);
 
 //            printChunkServerInfo();
 
@@ -200,7 +200,7 @@ public class Controller {
 
             }
 //            printChunkServerInfo();
-            sortedMemoryMap = sortByValues(freeMemoryMap);
+            sortedMemoryMap = sortByMemValues(freeMemoryMap);
 
             din.close();
             bin.close();
@@ -269,10 +269,15 @@ public class Controller {
         }
     }
 
-    private Map<String, Long> sortByValues(HashMap<String, Long> unsortMap){
+    /**
+     * Sort the map by values
+     * @param unsortedMap unsorted memory
+     * @return Sorted Map
+     */
+    private Map<String, Long> sortByMemValues(HashMap<String, Long> unsortedMap){
         // 1. Convert Map to List of Map
         List<Map.Entry<String, Long>> list =
-                new LinkedList<Map.Entry<String, Long>>(unsortMap.entrySet());
+                new LinkedList<Map.Entry<String, Long>>(unsortedMap.entrySet());
 
         // 2. Sort list with Collections.sort(), provide a custom Comparator
         //    Try switch the o1 o2 position for a different order

@@ -29,4 +29,9 @@ public class ChunkServerInfo {
     public void setChunkCount(int chunkCount) {
         this.chunkCount = chunkCount;
     }
+
+    public void incrementChunkCount(int num){
+        this.chunkCount += num;
+    }
+
 }

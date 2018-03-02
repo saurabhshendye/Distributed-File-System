@@ -22,7 +22,10 @@ public class ChunkServer {
     private ServerSocket serverSocket;
     private int chunkCount = 0;
 
+    public long spcaeRemaining;
+
     public static final File PATH_TO_STORE_CHUNKS = new File("/tmp/");
+    public static final long MAX_REQUIRED_SPACE = 3221225472L;
 
 
     private static ChunkServer chunkServer = null;
@@ -60,6 +63,9 @@ public class ChunkServer {
 
             // send Register request
             chunkServer.controllerSender.send_and_maintain(bRequestArray);
+
+            // Initialize space
+            chunkServer.initializeSpace();
 
             // Initializing Heartbeat threads
             // Start thread to send heartbeat every 5 minutes
@@ -223,7 +229,7 @@ public class ChunkServer {
         System.out.println("Path Name: " + PATH_TO_STORE_CHUNKS + name);
         RandomAccessFile rf = new RandomAccessFile(PATH_TO_STORE_CHUNKS + name, "rw");
 
-        // Write has of the chunk at the start of the file
+        // Writes the chunk at the start of the file
         byte [] hashArray = hash.getBytes();
         rf.writeInt(hashArray.length);
         rf.write(hashArray);
@@ -232,6 +238,24 @@ public class ChunkServer {
         rf.write(chunk);
 
         rf.close();
+
+        this.spcaeRemaining -= chunk.length;
     }
 
+
+    /**
+     * Initializes the space remaining variable
+     */
+    private void initializeSpace() {
+
+        if (PATH_TO_STORE_CHUNKS.getUsableSpace() > MAX_REQUIRED_SPACE){
+            spcaeRemaining = MAX_REQUIRED_SPACE;
+        }else {
+            spcaeRemaining = PATH_TO_STORE_CHUNKS.getUsableSpace();
+        }
+    }
+
+    public long getSpcaeRemaining(){
+        return spcaeRemaining;
+    }
 }

@@ -4,6 +4,7 @@ import GFS.Nodes.ChunkServer;
 import GFS.WireFormats.Heartbeat5;
 
 
+import static GFS.Nodes.ChunkServer.MAX_REQUIRED_SPACE;
 import static GFS.Nodes.ChunkServer.PATH_TO_STORE_CHUNKS;
 
 /**
@@ -22,6 +23,7 @@ public class HeartbeatThread5 extends Thread {
     }
 
     public void run(){
+
         while (!isInterrupted()){
             try {
                 Thread.sleep(300000);
@@ -30,10 +32,11 @@ public class HeartbeatThread5 extends Thread {
             }
 
             if (chunkServer.getisRegistered()){
-                Heartbeat5 h5 = new Heartbeat5(chunkServer.getChunkCount(), PATH_TO_STORE_CHUNKS.getUsableSpace());
+                Heartbeat5 h5 = new Heartbeat5(chunkServer.getChunkCount(), chunkServer.getSpcaeRemaining());
                 chunkServer.sendHeartbeat(h5);
             }
-
         }
     }
+
+
 }

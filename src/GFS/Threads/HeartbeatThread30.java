@@ -33,7 +33,7 @@ public class HeartbeatThread30 extends Thread {
             }
 
             if (chunkServer.getisRegistered()){
-                Heartbeat30 msg = new Heartbeat30(chunkServer.getChunkCount(), PATH_TO_STORE_CHUNKS.getUsableSpace());
+                Heartbeat30 msg = new Heartbeat30(chunkServer.getChunkCount(), chunkServer.getSpcaeRemaining());
                 chunkServer.sendHeartbeat(msg);
             }
         }
